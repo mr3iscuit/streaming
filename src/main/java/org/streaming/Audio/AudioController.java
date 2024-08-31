@@ -70,16 +70,16 @@ public class AudioController {
                               @RequestParam("chunkIndex") int chunkIndex,
                               @PathParam("id") Long audioId
     ) throws IOException {
-        fileService.uploadChunk(file, chunkIndex, audioId);
+        audioService.uploadChunk(file, chunkIndex, audioId);
         return "Chunk " + chunkIndex + " received";
     }
 
     @GetMapping("/{id}/download-chunk")
     public ResponseEntity<byte[]> downloadChunk(
-            @PathParam("fileId") Long fileId,
+            @PathParam("audioID") Long audioId,
             @RequestParam("chunkIndex") int chunkIndex
     ) {
-        Optional<FileChunk> fileChunk = fileService.downloadChunk(fileId, chunkIndex);
+        Optional<FileChunk> fileChunk = audioService.downloadChunk(audioId, chunkIndex);
 
         if (fileChunk.isPresent()) {
             FileChunk chunk = fileChunk.get();

@@ -1,18 +1,15 @@
 package org.streaming.Audio;
 
-import jakarta.persistence.EntityExistsException;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springdoc.api.OpenApiResourceNotFoundException;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +17,7 @@ import java.util.stream.Collectors;
 public class AudioService {
     private AudioRepository audioRepo;
     private FileRepository fileRepo;
+    private FileChunkRepository fileChunkRepository;
 
     private AudioGetDTO buildAudioGetDTO(AudioEntity audio) {
         FileEntity file = audio.getFile();
@@ -108,5 +106,37 @@ public class AudioService {
         audio.setLastModified(LocalDateTime.now());
 
         return audioRepo.save(audio);
+    }
+
+    public void uploadChunk(MultipartFile file, int chunkIndex, Long audioId) throws IOException {
+        AudioEntity audioEntity = audioRepo.findById(audioId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid audio ID"));
+
+        FileEntity fileEntity = audioEntity.getFile();
+
+        if (fileEntity == null) {
+            fileEntity = new FileEntity();
+            fileEntity.setFileType(file.getContentType());
+            fileEntity.setFileSize(file.getSize());
+            fileEntity.setUploadDate(LocalDateTime.now());
+            fileRepo.save(fileEntity);
+        }
+
+        FileChunk fileChunk = new FileChunk();
+        fileChunk.setData(file.getBytes());
+        fileChunk.setChunkIndex(chunkIndex);
+        fileChunk.setFile(fileEntity);
+
+        audioEntity.setFile(fileEntity);
+
+        fileChunkRepository.save(fileChunk);
+    }
+
+    public Optional<FileChunk> downloadChunk(Long audioId, int chunkIndex) {
+        AudioEntity audio = audioRepo.findById(audioId).orElseThrow(() -> new OpenApiResourceNotFoundException("No Audio found with id: " + audioId));
+
+        FileEntity file = audio.getFile();
+
+        return fileChunkRepository.findByFile_IdAndChunkIndex(file.getId(), chunkIndex);
     }
 }
