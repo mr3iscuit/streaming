@@ -1,18 +1,12 @@
-package org.streaming.file;
+package org.streaming.Audio;
 
 import jakarta.persistence.EntityExistsException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.streaming.Audio.AudioEntity;
-import org.streaming.Audio.AudioRepository;
-import org.streaming.filechunk.FileChunk;
-import org.streaming.filechunk.FileChunkRepository;
+import org.streaming.Audio.*;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,10 +29,6 @@ public class FileService {
     public void uploadChunk(MultipartFile file, int chunkIndex, Long audioId) throws IOException {
         AudioEntity audioEntity = audioRepository.findById(audioId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid audio ID"));
-
-        if (audioEntity.getFile() != null) {
-            throw new EntityExistsException("Audio already exsists by id: " + audioEntity.getFile().getId());
-        }
 
         FileEntity fileEntity = audioEntity.getFile();
 

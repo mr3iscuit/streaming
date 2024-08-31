@@ -24,17 +24,20 @@ repositories {
 }
 
 dependencies {
+    // implementation 'io.jsonwebtoken:jjwt:0.11.2'
     annotationProcessor 'org.projectlombok:lombok'
+
     compileOnly 'org.jetbrains:annotations:22.0.0'
     compileOnly 'org.projectlombok:lombok'
-    implementation 'com.h2database:h2'
 
+    // implementation 'com.h2database:h2'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-    // implementation 'io.jsonwebtoken:jjwt:0.11.2'
-
     implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+
+    implementation 'mysql:mysql-connector-java:8.0.30'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -43,8 +46,13 @@ dependencies {
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // See https://docs.gradle.org/8.3/userguide/upgrading_version_8.html#test_framework_implementation_dependencies
+
 }
 
 tasks.named('test') {

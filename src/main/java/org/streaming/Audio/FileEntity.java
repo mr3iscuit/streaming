@@ -1,15 +1,13 @@
 package org.streaming.Audio;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.streaming.Audio.AudioEntity;
 import org.streaming.Audio.FileChunk;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,6 +15,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class FileEntity {
 
     @Id
@@ -34,7 +34,7 @@ public class FileEntity {
     private Long fileSize;
 
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<FileChunk> chunks;
+    private List<FileChunk> chunks;
 
     @OneToOne(mappedBy = "file")
     private AudioEntity audio;
