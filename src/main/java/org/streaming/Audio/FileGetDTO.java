@@ -15,5 +15,5 @@ public class FileGetDTO {
     private Long fileSize;
     private Long id;
     private String fileType;
-    private List<Long> chunks;
+    private List<Long> chunksID;
 }

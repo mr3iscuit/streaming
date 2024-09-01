@@ -23,7 +23,6 @@ import java.util.Optional;
 public class AudioController {
 
     private AudioService audioService;
-    private FileService fileService;
 
 
     @GetMapping("/{id}")

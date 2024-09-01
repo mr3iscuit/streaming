@@ -30,8 +30,8 @@ public class AudioService {
                             .uploadDate(file.getUploadDate())
                             .fileType(file.getFileType())
                             .fileSize(file.getFileSize())
-                            .chunks(file.getChunks() != null ?
-                                    file.getChunks().stream().map(FileChunk::getId).collect(Collectors.toList()) :
+                            .chunksID(file.getChunksID() != null ?
+                                    file.getChunksID().stream().map(FileChunk::getId).collect(Collectors.toList()) :
                                     new ArrayList<>())
                             .build();
         }
