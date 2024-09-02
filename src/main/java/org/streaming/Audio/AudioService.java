@@ -5,6 +5,7 @@ import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ public class AudioService {
             fileGetDTO =
                     FileGetDTO.builder()
                             .id(file.getId())
-                            .uploadDate(file.getUploadDate())
                             .fileType(file.getFileType())
                             .fileSize(file.getFileSize())
                             .chunksID(file.getChunksID() != null ?
@@ -67,7 +67,9 @@ public class AudioService {
 
     public AudioEntity saveAudio(AudioPostDTO poReq) {
 
-        AudioEntity newAudio = AudioEntity.builder()
+        FileEntity fileEntity = new FileEntity();
+
+        AudioEntity audio = AudioEntity.builder()
                 .title(poReq.getTitle())
                 .artist(poReq.getArtist())
                 .album(poReq.getAlbum())
@@ -76,12 +78,20 @@ public class AudioService {
                 .trackNumber(poReq.getTrackNumber())
                 .build();
 
+        fileEntity = new FileEntity().builder()
+                .sampleRate(poReq.getFile().getSampleRate())
+                .fileType(poReq.getFile().getFileType())
+                .fileSize(poReq.getFile().getFileSize())
+                .build();
+
+        audio.setFile( fileRepo.save(fileEntity) );
+
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        newAudio.setUploadDate(currentDateTime);
-        newAudio.setLastModified(currentDateTime);
+        audio.setUploadDate(currentDateTime);
+        audio.setLastModified(currentDateTime);
 
-        return audioRepo.save(newAudio);
+        return audioRepo.save(audio);
     }
 
     public AudioEntity update(Long id, AudioPostDTO poReq) {
@@ -105,6 +115,10 @@ public class AudioService {
 
         audio.setLastModified(LocalDateTime.now());
 
+        //TODO patch file from audioDTO
+//        FileEntity fileEntity = audio.getFile();
+//        audio.setFile(fileEntity);
+
         return audioRepo.save(audio);
     }
 
@@ -114,20 +128,11 @@ public class AudioService {
 
         FileEntity fileEntity = audioEntity.getFile();
 
-        if (fileEntity == null) {
-            fileEntity = new FileEntity();
-            fileEntity.setFileType(file.getContentType());
-            fileEntity.setFileSize(file.getSize());
-            fileEntity.setUploadDate(LocalDateTime.now());
-            fileRepo.save(fileEntity);
-        }
-
         FileChunk fileChunk = new FileChunk();
         fileChunk.setData(file.getBytes());
         fileChunk.setChunkIndex(chunkIndex);
         fileChunk.setFile(fileEntity);
 
-        audioEntity.setFile(fileEntity);
 
         fileChunkRepository.save(fileChunk);
     }

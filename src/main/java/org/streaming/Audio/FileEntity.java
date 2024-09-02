@@ -25,12 +25,10 @@ public class FileEntity {
             nullable = false,
             updatable = false
     )
-    private LocalDateTime uploadDate;
 
     private String fileType;
     private Long fileSize;
     private Long sampleRate;
-    private String format;
 
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FileChunk> chunksID;

@@ -10,8 +10,8 @@ import java.util.Set;
 
 @Builder
 @Data
+@Getter
 public class FileGetDTO {
-    private LocalDateTime uploadDate;
     private Long fileSize;
     private Long id;
     private String fileType;
