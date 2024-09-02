@@ -65,7 +65,7 @@ public class AudioService {
         return audioRepo.findAll().stream().map(this::buildAudioGetDTO).collect(Collectors.toList());
     }
 
-    public AudioEntity saveAudio(AudioPostDTO poReq) {
+    public AudioPostDTO saveAudio(AudioPostDTO poReq) {
 
         FileEntity fileEntity = new FileEntity();
 
@@ -91,7 +91,20 @@ public class AudioService {
         audio.setUploadDate(currentDateTime);
         audio.setLastModified(currentDateTime);
 
-        return audioRepo.save(audio);
+        AudioPostDTO audioPostDTO = AudioPostDTO.builder()
+                .id(audio.getId())
+                .title(audio.getTitle())
+                .genre(audio.getGenre())
+                .album(audio.getAlbum())
+                .releaseYear(audio.getReleaseYear())
+                .file(FilePostDTO.builder()
+                        .sampleRate(audio.getFile().getSampleRate())
+                        .fileType(audio.getFile().getFileType())
+                        .fileSize(audio.getFile().getFileSize())
+                        .build())
+                .build();
+
+        return audioRepo.save(audioPostDTO);
     }
 
     public AudioEntity update(Long id, AudioPostDTO poReq) {

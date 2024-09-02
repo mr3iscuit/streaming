@@ -37,22 +37,8 @@ public class AudioController {
 
     @PostMapping
     private ResponseEntity<AudioPostDTO> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
-        AudioEntity savedAudio = audioService.saveAudio(newAudioRequest);
 
-        AudioPostDTO response = AudioPostDTO.builder()
-                .id(savedAudio.getId())
-                .title(savedAudio.getTitle())
-                .genre(savedAudio.getGenre())
-                .album(savedAudio.getAlbum())
-                .releaseYear(savedAudio.getReleaseYear())
-                .file(FilePostDTO.builder()
-                        .sampleRate(savedAudio.getFile().getSampleRate())
-                        .fileType(savedAudio.getFile().getFileType())
-                        .fileSize(savedAudio.getFile().getFileSize())
-                        .build())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(audioService.saveAudio(newAudioRequest));
     }
 
     @PatchMapping("/{id}")
