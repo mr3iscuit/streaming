@@ -36,33 +36,19 @@ public class AudioController {
     }
 
     @PostMapping
-    private ResponseEntity<Void> createAudio(
-            @RequestBody AudioPostDTO newAudioRequest,
-            UriComponentsBuilder ucb) {
-
+    private ResponseEntity<AudioEntity> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
         AudioEntity savedAudio = audioService.saveAudio(newAudioRequest);
-
-        URI locationOfNewAudio = ucb
-                .path("/audio/{id}")
-                .buildAndExpand(savedAudio.getId())
-                .toUri();
-
-        return ResponseEntity.created(locationOfNewAudio).build();
+        return ResponseEntity.ok(savedAudio);
     }
 
     @PatchMapping("/{id}")
-    private ResponseEntity<Void> updateAudio(
+    private ResponseEntity<AudioEntity> updateAudio(
             @PathVariable Long id,
             @RequestBody AudioPostDTO audioDetails,
             UriComponentsBuilder ucb) {
 
         AudioEntity savedAudio = audioService.update(id, audioDetails);
-        URI locationOfNewAudio = ucb
-                .path("/audio/{id}")
-                .buildAndExpand(savedAudio.getId())
-                .toUri();
-
-        return ResponseEntity.created(locationOfNewAudio).build();
+        return ResponseEntity.ok(savedAudio);
     }
     @PostMapping(value = "/{id}/upload-chunk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadChunk(@RequestParam("file") MultipartFile file,
