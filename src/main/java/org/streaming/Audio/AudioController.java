@@ -50,18 +50,19 @@ public class AudioController {
         AudioEntity savedAudio = audioService.update(id, audioDetails);
         return ResponseEntity.ok(savedAudio);
     }
-    @PostMapping(value = "/{id}/upload-chunk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String uploadChunk(@RequestParam("file") MultipartFile file,
-                              @RequestParam("chunkIndex") int chunkIndex,
-                              @PathParam("id") Long audioId
+    @PostMapping(value = "/{audioId}/upload-chunk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String uploadChunk(
+            @PathVariable Long audioId,
+            @RequestParam("chunkIndex") int chunkIndex,
+            @RequestParam("file") MultipartFile file
     ) throws IOException {
         audioService.uploadChunk(file, chunkIndex, audioId);
         return "Chunk " + chunkIndex + " received";
     }
 
-    @GetMapping("/{id}/download-chunk")
+    @GetMapping("/{audioId}/download-chunk")
     public ResponseEntity<byte[]> downloadChunk(
-            @PathParam("audioID") Long audioId,
+            @PathParam("audioId") Long audioId,
             @RequestParam("chunkIndex") int chunkIndex
     ) {
         Optional<FileChunk> fileChunk = audioService.downloadChunk(audioId, chunkIndex);
