@@ -33,6 +33,7 @@ public class AudioService {
                             .chunksID(file.getChunksID() != null ?
                                     file.getChunksID().stream().map(FileChunk::getId).collect(Collectors.toList()) :
                                     new ArrayList<>())
+                            .chunkNumber(file.getChunksID() == null ? 0 : file.getChunksID().size())
                             .build();
         }
 
@@ -65,7 +66,7 @@ public class AudioService {
         return audioRepo.findAll().stream().map(this::buildAudioGetDTO).collect(Collectors.toList());
     }
 
-    public AudioPostDTO saveAudio(AudioPostDTO poReq) {
+    public AudioGetDTO saveAudio(AudioPostDTO poReq) {
 
         FileEntity fileEntity = new FileEntity();
 
@@ -84,27 +85,17 @@ public class AudioService {
                 .fileSize(poReq.getFile().getFileSize())
                 .build();
 
-        audio.setFile( fileRepo.save(fileEntity) );
+        audio.setFile(fileRepo.save(fileEntity));
 
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         audio.setUploadDate(currentDateTime);
         audio.setLastModified(currentDateTime);
+        audio = audioRepo.save(audio);
 
-        AudioPostDTO audioPostDTO = AudioPostDTO.builder()
-                .id(audio.getId())
-                .title(audio.getTitle())
-                .genre(audio.getGenre())
-                .album(audio.getAlbum())
-                .releaseYear(audio.getReleaseYear())
-                .file(FilePostDTO.builder()
-                        .sampleRate(audio.getFile().getSampleRate())
-                        .fileType(audio.getFile().getFileType())
-                        .fileSize(audio.getFile().getFileSize())
-                        .build())
-                .build();
+        AudioGetDTO audioGetDTO = buildAudioGetDTO(audio);
 
-        return audioRepo.save(audioPostDTO);
+        return audioGetDTO;
     }
 
     public AudioEntity update(Long id, AudioPostDTO poReq) {
@@ -145,7 +136,6 @@ public class AudioService {
         fileChunk.setData(file.getBytes());
         fileChunk.setChunkIndex(chunkIndex);
         fileChunk.setFile(fileEntity);
-
 
         fileChunkRepository.save(fileChunk);
     }

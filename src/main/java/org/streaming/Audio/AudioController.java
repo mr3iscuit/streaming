@@ -1,6 +1,5 @@
 package org.streaming.Audio;
 
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class AudioController {
     }
 
     @PostMapping
-    private ResponseEntity<AudioPostDTO> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
+    private ResponseEntity<AudioGetDTO> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
 
         return ResponseEntity.ok(audioService.saveAudio(newAudioRequest));
     }
@@ -62,7 +61,7 @@ public class AudioController {
 
     @GetMapping("/{audioId}/download-chunk")
     public ResponseEntity<byte[]> downloadChunk(
-            @PathParam("audioId") Long audioId,
+            @PathVariable Long audioId,
             @RequestParam("chunkIndex") int chunkIndex
     ) {
         Optional<FileChunk> fileChunk = audioService.downloadChunk(audioId, chunkIndex);
@@ -70,7 +69,7 @@ public class AudioController {
         if (fileChunk.isPresent()) {
             FileChunk chunk = fileChunk.get();
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; audioId=" + chunk.getFile().getAudio().getId() + "-chunk-" + chunkIndex);
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=audioID" + chunk.getFile().getAudio().getId() + "-chunk-" + chunkIndex);
             return new ResponseEntity<>(chunk.getData(), headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

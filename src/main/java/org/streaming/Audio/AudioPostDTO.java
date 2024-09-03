@@ -1,10 +1,10 @@
 package org.streaming.Audio;
 import lombok.*;
 
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@Builder
 @Getter
+@NoArgsConstructor
 @Setter
 public class AudioPostDTO {
     private Long id;

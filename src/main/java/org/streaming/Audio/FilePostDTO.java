@@ -12,4 +12,5 @@ public class FilePostDTO {
     private Long fileSize;
     private String fileType;
     private Long sampleRate;
+    private int chunkNumber;
 }
