@@ -29,6 +29,7 @@ public class FileEntity {
     private String fileType;
     private Long fileSize;
     private Long sampleRate;
+    private Integer partialChunkSize;
 
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FileChunk> chunksID;

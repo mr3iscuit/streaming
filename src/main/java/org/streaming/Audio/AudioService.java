@@ -5,10 +5,8 @@ import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,39 +19,8 @@ public class AudioService {
     private FileChunkRepository fileChunkRepository;
 
     private AudioGetDTO buildAudioGetDTO(AudioEntity audio) {
-        FileEntity file = audio.getFile();
-        FileGetDTO fileGetDTO = null;
 
-        if (file != null) {
-            fileGetDTO =
-                    FileGetDTO.builder()
-                            .id(file.getId())
-                            .fileType(file.getFileType())
-                            .fileSize(file.getFileSize())
-                            .chunksID(file.getChunksID() != null ?
-                                    file.getChunksID().stream().map(FileChunk::getId).collect(Collectors.toList()) :
-                                    new ArrayList<>())
-                            .chunkNumber(file.getChunksID() == null ? 0 : file.getChunksID().size())
-                            .build();
-        }
-
-        AudioGetDTO res = AudioGetDTO.builder()
-                .id(audio.getId())
-                .uploadDate(audio.getUploadDate())
-                .lastModified(audio.getLastModified())
-
-                .title(audio.getTitle())
-                .artist(audio.getArtist())
-                .album(audio.getAlbum())
-                .releaseYear((audio.getReleaseYear()))
-                .genre(audio.getGenre())
-                .trackNumber(audio.getTrackNumber())
-                .file(fileGetDTO)
-                .build();
-
-        res.setFile(fileGetDTO);
-
-        return res;
+        return AudioGetDTO.buildFromAudioEntity(audio);
     }
 
     public AudioGetDTO getAudioByID(Long id) {
@@ -68,7 +35,7 @@ public class AudioService {
 
     public AudioGetDTO saveAudio(AudioPostDTO poReq) {
 
-        FileEntity fileEntity = new FileEntity();
+        FileEntity fileEntity;
 
         AudioEntity audio = AudioEntity.builder()
                 .title(poReq.getTitle())
@@ -79,10 +46,12 @@ public class AudioService {
                 .trackNumber(poReq.getTrackNumber())
                 .build();
 
-        fileEntity = new FileEntity().builder()
+        new FileEntity();
+        fileEntity = FileEntity.builder()
                 .sampleRate(poReq.getFile().getSampleRate())
                 .fileType(poReq.getFile().getFileType())
                 .fileSize(poReq.getFile().getFileSize())
+                .partialChunkSize(poReq.getFile().getPartialChunkSize())
                 .build();
 
         audio.setFile(fileRepo.save(fileEntity));
@@ -93,9 +62,7 @@ public class AudioService {
         audio.setLastModified(currentDateTime);
         audio = audioRepo.save(audio);
 
-        AudioGetDTO audioGetDTO = buildAudioGetDTO(audio);
-
-        return audioGetDTO;
+        return buildAudioGetDTO(audio);
     }
 
     public AudioEntity update(Long id, AudioPostDTO poReq) {
@@ -144,6 +111,9 @@ public class AudioService {
         AudioEntity audio = audioRepo.findById(audioId).orElseThrow(() -> new OpenApiResourceNotFoundException("No Audio found with id: " + audioId));
 
         FileEntity file = audio.getFile();
+        if (file == null) {
+            throw new OpenApiResourceNotFoundException("No file attached to Audio by id : %d".formatted(audioId));
+        }
 
         return fileChunkRepository.findByFile_IdAndChunkIndex(file.getId(), chunkIndex);
     }

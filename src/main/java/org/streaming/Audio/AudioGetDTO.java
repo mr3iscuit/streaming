@@ -1,6 +1,7 @@
 package org.streaming.Audio;
 
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -20,4 +21,28 @@ public class AudioGetDTO {
     private String genre;
     private String trackNumber;
     private FileGetDTO file;
+
+    public static AudioGetDTO buildFromAudioEntity(@NotNull AudioEntity audioEntity) {
+
+        FileGetDTO fileGetDTO = null;
+        FileEntity file = audioEntity.getFile();
+
+        if (file != null) {
+            fileGetDTO = FileGetDTO.buildFromFileEntity(file);
+        }
+
+        return AudioGetDTO.builder()
+                .id(audioEntity.getId())
+                .uploadDate(audioEntity.getUploadDate())
+                .lastModified(audioEntity.getLastModified())
+
+                .title(audioEntity.getTitle())
+                .artist(audioEntity.getArtist())
+                .album(audioEntity.getAlbum())
+                .releaseYear((audioEntity.getReleaseYear()))
+                .genre(audioEntity.getGenre())
+                .trackNumber(audioEntity.getTrackNumber())
+                .file(fileGetDTO)
+                .build();
+    }
 }
