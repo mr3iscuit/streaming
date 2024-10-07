@@ -1,8 +1,6 @@
 package org.streaming.Audio;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,24 +18,25 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AudioController {
 
-    private AudioService audioService;
-
+    private IAudioService audioService;
 
     @GetMapping("/{id}")
     public ResponseEntity<AudioGetDTO> getAudio(@PathVariable Long id) {
         return ResponseEntity.ok(audioService.getAudioByID(id));
     }
 
+
     @GetMapping()
     public ResponseEntity<List<AudioGetDTO>> getAllAudio() {
         return ResponseEntity.ok(audioService.getAllAudio());
     }
 
-    @PostMapping
-    private ResponseEntity<AudioGetDTO> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
 
+    @PostMapping()
+    private ResponseEntity<AudioGetDTO> createAudio(@RequestBody AudioPostDTO newAudioRequest) {
         return ResponseEntity.ok(audioService.saveAudio(newAudioRequest));
     }
+
 
     @PatchMapping("/{id}")
     private ResponseEntity<AudioEntity> updateAudio(
@@ -49,6 +47,8 @@ public class AudioController {
         AudioEntity savedAudio = audioService.update(id, audioDetails);
         return ResponseEntity.ok(savedAudio);
     }
+
+
     @PostMapping(value = "/{audioId}/upload-chunk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadChunk(
             @PathVariable Long audioId,
@@ -58,6 +58,7 @@ public class AudioController {
         audioService.uploadChunk(file, chunkIndex, audioId);
         return "Chunk " + chunkIndex + " received";
     }
+
 
     @GetMapping("/{audioId}/download-chunk")
     public ResponseEntity<byte[]> downloadChunk(
