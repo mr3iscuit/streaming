@@ -1,13 +1,9 @@
 package org.streaming.Audio;
 
-import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Builder
@@ -21,7 +17,8 @@ public class FileGetDTO {
     private List<Long> chunksID;
     private Integer chunkNumber;
 
-    public static FileGetDTO buildFromFileEntity(FileEntity file) {
+    public static FileGetDTO map(FileEntity file) {
+
         return FileGetDTO.builder()
                 .id(file.getId())
                 .fileType(file.getFileType())
