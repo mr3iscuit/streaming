@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
 @AllArgsConstructor
-public class AudioService {
+public class AudioService implements IAudioService {
     private AudioRepository audioRepo;
     private FileRepository fileRepo;
     private FileChunkRepository fileChunkRepository;

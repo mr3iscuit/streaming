@@ -1,5 +1,6 @@
 package org.streaming.config;
 
+import org.streaming.Audio.*;
 import org.streaming.auditing.ApplicationAuditAware;
 import org.streaming.user.UserRepository;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,11 @@ public class ApplicationConfig {
 
     public ApplicationConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Bean
+    public IAudioService audioService(AudioRepository audioRepository, FileRepository fileRepository, FileChunkRepository fileChunkRepository) {
+        return new AudioService(audioRepository, fileRepository, fileChunkRepository);
     }
 
     @Bean
