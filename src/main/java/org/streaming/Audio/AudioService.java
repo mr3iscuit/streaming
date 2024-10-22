@@ -17,19 +17,14 @@ public class AudioService implements IAudioService {
     private FileRepository fileRepo;
     private FileChunkRepository fileChunkRepository;
 
-    private AudioGetDTO buildAudioGetDTO(AudioEntity audio) {
-
-        return AudioGetDTO.buildFromAudioEntity(audio);
-    }
-
     public AudioGetDTO getAudioByID(Long id) {
         AudioEntity audio = audioRepo.findById(id).orElseThrow(() -> new OpenApiResourceNotFoundException("No audio found by id: " + id));
 
-        return buildAudioGetDTO(audio);
+        return AudioGetDTO.map(audio);
     }
 
     public List<AudioGetDTO> getAllAudio() {
-        return audioRepo.findAll().stream().map(this::buildAudioGetDTO).collect(Collectors.toList());
+        return audioRepo.findAll().stream().map(AudioGetDTO::map).collect(Collectors.toList());
     }
 
     public AudioGetDTO saveAudio(AudioPostDTO poReq) {
@@ -61,7 +56,7 @@ public class AudioService implements IAudioService {
         audio.setLastModified(currentDateTime);
         audio = audioRepo.save(audio);
 
-        return buildAudioGetDTO(audio);
+        return AudioGetDTO.map(audio);
     }
 
     public AudioEntity update(Long id, AudioPostDTO poReq) {

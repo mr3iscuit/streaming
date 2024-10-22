@@ -21,13 +21,13 @@ public class AudioGetDTO {
     private String trackNumber;
     private FileGetDTO file;
 
-    public static AudioGetDTO buildFromAudioEntity(AudioEntity audioEntity) {
+    public static AudioGetDTO map(@NotNull AudioEntity audioEntity) {
 
         FileGetDTO fileGetDTO = null;
         FileEntity file = audioEntity.getFile();
 
         if (file != null) {
-            fileGetDTO = FileGetDTO.buildFromFileEntity(file);
+            fileGetDTO = FileGetDTO.map(file);
         }
 
         return AudioGetDTO.builder()
